@@ -1,9 +1,9 @@
 # eth-indexer
 
-![GitHub Tag](https://img.shields.io/github/v/tag/grassrootseconomics/eth-indexer)
+![GitHub Tag](https://img.shields.io/github/v/tag/comso-local-credit/eth-indexer)
 
 A lightweight Postgres chain indexer designed to couple with
-[eth-tracker](https://github.com/grassrootseconomics/eth-tracker) to index all
+[eth-tracker](https://github.com/comso-local-credit/eth-tracker) to index all
 relevant GE related blockchain data on any EVM chain.
 
 ## Getting Started
@@ -25,7 +25,7 @@ We provide pre-built images for `linux/amd64`. See the packages tab on Github.
 If you are on any other platform:
 
 ```bash
-git clone https://github.com/grassrootseconomics/eth-indexer.git
+git clone https://github.com/comso-local-credit/eth-indexer.git
 cd eth-indexer
 docker buildx build --build-arg BUILD=$(git rev-parse --short HEAD) --tag eth-indexer:$(git rev-parse --short HEAD) --tag eth-indexer:latest .
 docker images

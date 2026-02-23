@@ -17,7 +17,7 @@ services:
       timeout: 5s
       retries: 5   
   eth-indexer:
-    image: ghcr.io/grassrootseconomics/eth-indexer:latest
+    image: ghcr.io/cosmo-local-credit/eth-indexer:latest
     restart: unless-stopped
     depends_on:
       postgres:
