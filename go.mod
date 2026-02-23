@@ -3,7 +3,7 @@ module github.com/cosmo-local-credit/eth-indexer
 go 1.26
 
 require (
-	github.com/VictoriaMetrics/metrics v1.41.1
+	github.com/VictoriaMetrics/metrics v1.41.2
 	github.com/cosmo-local-credit/eth-tracker v0.0.0-20260223062715-7448d70dea4a
 	github.com/ethereum/go-ethereum v1.17.0
 	github.com/go-chi/chi/v5 v5.2.5
