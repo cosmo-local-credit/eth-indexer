@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/grassrootseconomics/eth-tracker/pkg/event"
+	"github.com/cosmo-local-credit/eth-tracker/pkg/event"
 )
 
 func (h *Handler) IndexPoolSwap(ctx context.Context, event event.Event) error {

@@ -4,16 +4,17 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 	"time"
 
-	"github.com/grassrootseconomics/eth-indexer/v2/pkg/router"
+	"github.com/cosmo-local-credit/eth-indexer/pkg/router"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nats.go/jetstream"
 )
 
 type (
 	JetStreamOpts struct {
-		Endpoint    string
+		Endpoints   []string
 		JetStreamID string
 		Logg        *slog.Logger
 		Router      *router.Router
@@ -34,7 +35,11 @@ const (
 )
 
 func NewJetStreamSub(o JetStreamOpts) (*JetStreamSub, error) {
-	natsConn, err := nats.Connect(o.Endpoint)
+	natsConn, err := nats.Connect(
+		strings.Join(o.Endpoints, ","),
+		nats.MaxReconnects(-1),
+		nats.ReconnectWait(2*time.Second),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +53,12 @@ func NewJetStreamSub(o JetStreamOpts) (*JetStreamSub, error) {
 	defer cancel()
 
 	stream, err := js.Stream(ctx, pullStream)
+	if errors.Is(err, jetstream.ErrStreamNotFound) {
+		stream, err = js.CreateStream(ctx, jetstream.StreamConfig{
+			Name:     pullStream,
+			Subjects: []string{pullSubject},
+		})
+	}
 	if err != nil {
 		return nil, err
 	}

@@ -3,8 +3,8 @@ package handler
 import (
 	"log/slog"
 
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/cache"
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/store"
+	"github.com/cosmo-local-credit/eth-indexer/internal/cache"
+	"github.com/cosmo-local-credit/eth-indexer/internal/store"
 	"github.com/grassrootseconomics/ethutils"
 )
 

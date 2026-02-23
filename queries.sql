@@ -22,13 +22,15 @@ LIMIT 1
 -- $3: recipient_address
 -- $4: transfer_value
 -- $5: contract_address
+-- $6: log_index
 INSERT INTO token_transfer(
     tx_id,
     sender_address,
     recipient_address,
     transfer_value,
-    contract_address
-) VALUES($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+    contract_address,
+    log_index
+) VALUES($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING
 
 --name: insert-token-mint
 -- $1: tx_id
@@ -36,25 +38,29 @@ INSERT INTO token_transfer(
 -- $3: recipient_address
 -- $4: mint_value
 -- $5: contract_address
+-- $6: log_index
 INSERT INTO token_mint(
     tx_id,
     minter_address,
     recipient_address,
     mint_value,
-    contract_address
-) VALUES($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+    contract_address,
+    log_index
+) VALUES($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING
 
 --name: insert-token-burn
 -- $1: tx_id
 -- $2: burner_address
 -- $3: burn_value
 -- $4: contract_address
+-- $5: log_index
 INSERT INTO token_burn(
     tx_id,
     burner_address,
     burn_value,
-    contract_address
-) VALUES($1, $2, $3, $4) ON CONFLICT DO NOTHING
+    contract_address,
+    log_index
+) VALUES($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
 
 --name: insert-faucet-give
 -- $1: tx_id
@@ -62,13 +68,15 @@ INSERT INTO token_burn(
 -- $3: recipient_address
 -- $4: give_value
 -- $5: contract_address
+-- $6: log_index
 INSERT INTO faucet_give(
     tx_id,
     token_address,
     recipient_address,
     give_value,
-    contract_address
-) VALUES($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+    contract_address,
+    log_index
+) VALUES($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING
 
 --name: insert-pool-swap
 -- $1: tx_id
@@ -79,6 +87,7 @@ INSERT INTO faucet_give(
 -- $6: out_value
 -- $7: fee
 -- $8: contract_address
+-- $9: log_index
 INSERT INTO pool_swap(
     tx_id,
     initiator_address,
@@ -87,8 +96,9 @@ INSERT INTO pool_swap(
     in_value,
     out_value,
     fee,
-    contract_address
-) VALUES($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT DO NOTHING
+    contract_address,
+    log_index
+) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT DO NOTHING
 
 --name: insert-pool-deposit
 -- $1: tx_id
@@ -96,25 +106,29 @@ INSERT INTO pool_swap(
 -- $3: token_in_address
 -- $4: in_value
 -- $5: contract_address
+-- $6: log_index
 INSERT INTO pool_deposit(
     tx_id,
     initiator_address,
     token_in_address,
     in_value,
-    contract_address
-) VALUES($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
+    contract_address,
+    log_index
+) VALUES($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING
 
 --name: insert-ownership-change
 -- $1: tx_id
 -- $2: previous_owner
 -- $3: new_owner
 -- $4: contract_address
+-- $5: log_index
 INSERT INTO ownership_change(
     tx_id,
     previous_owner,
     new_owner,
-    contract_address
-) VALUES($1, $2, $3, $4) ON CONFLICT DO NOTHING
+    contract_address,
+    log_index
+) VALUES($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING
 
 --name: insert-token
 -- $1: contract_address

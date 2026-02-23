@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/grassrootseconomics/eth-tracker/pkg/event"
+	"github.com/cosmo-local-credit/eth-tracker/pkg/event"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

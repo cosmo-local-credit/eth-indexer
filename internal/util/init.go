@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kamikazechaser/common/logg"
+	"github.com/kamikazechaser/util/logg"
 	"github.com/knadh/koanf/parsers/toml"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
@@ -13,7 +13,7 @@ import (
 )
 
 func InitLogger() *slog.Logger {
-	loggOpts := logg.LoggOpts{
+	loggOpts := logg.Opts{
 		FormatType: logg.Logfmt,
 		LogLevel:   slog.LevelInfo,
 	}
@@ -31,9 +31,7 @@ func InitLogger() *slog.Logger {
 }
 
 func InitConfig(lo *slog.Logger, confFilePath string) *koanf.Koanf {
-	var (
-		ko = koanf.New(".")
-	)
+	var ko = koanf.New(".")
 
 	confFile := file.Provider(confFilePath)
 	if err := ko.Load(confFile, toml.Parser()); err != nil {
@@ -41,12 +39,21 @@ func InitConfig(lo *slog.Logger, confFilePath string) *koanf.Koanf {
 		os.Exit(1)
 	}
 
-	if err := ko.Load(env.Provider("INDEXER_", ".", func(s string) string {
-		return strings.ReplaceAll(strings.ToLower(
-			strings.TrimPrefix(s, "INDEXER_")), "__", ".")
-	}), nil); err != nil {
+	err := ko.Load(env.ProviderWithValue("INDEXER__", ".", func(s string, v string) (string, interface{}) {
+		key := strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "INDEXER__")), "__", ".")
+		if strings.Contains(v, " ") {
+			return key, strings.Split(v, " ")
+		}
+		return key, v
+	}), nil)
+
+	if err != nil {
 		lo.Error("could not override config from env vars", "error", err)
 		os.Exit(1)
+	}
+
+	if os.Getenv("DEBUG") != "" {
+		ko.Print()
 	}
 
 	return ko

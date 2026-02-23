@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/grassrootseconomics/eth-tracker/pkg/event"
+	"github.com/cosmo-local-credit/eth-tracker/pkg/event"
 	"github.com/nats-io/nats.go/jetstream"
 	"github.com/sourcegraph/conc/pool"
 )

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/handler"
-	"github.com/grassrootseconomics/eth-indexer/v2/pkg/router"
+	"github.com/cosmo-local-credit/eth-indexer/internal/handler"
+	"github.com/cosmo-local-credit/eth-indexer/pkg/router"
 )
 
 func bootstrapRouter(handlerContainer *handler.Handler) *router.Router {
@@ -10,6 +10,11 @@ func bootstrapRouter(handlerContainer *handler.Handler) *router.Router {
 
 	router.RegisterRoute(
 		"TRACKER.TOKEN_TRANSFER",
+		handlerContainer.IndexTransfer,
+		handlerContainer.AddToken,
+	)
+	router.RegisterRoute(
+		"TRACKER.TOKEN_TRANSFER_FROM",
 		handlerContainer.IndexTransfer,
 		handlerContainer.AddToken,
 	)

@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/grassrootseconomics/eth-tracker/pkg/event"
+	"github.com/cosmo-local-credit/eth-tracker/pkg/event"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/tern/v2/migrate"
@@ -95,6 +95,7 @@ func (pg *Pg) InsertTokenTransfer(ctx context.Context, eventPayload event.Event)
 			eventPayload.Payload["to"].(string),
 			eventPayload.Payload["value"].(string),
 			eventPayload.ContractAddress,
+			int64(eventPayload.Index),
 		)
 		return err
 	})
@@ -115,6 +116,7 @@ func (pg *Pg) InsertTokenMint(ctx context.Context, eventPayload event.Event) err
 			eventPayload.Payload["to"].(string),
 			eventPayload.Payload["value"].(string),
 			eventPayload.ContractAddress,
+			int64(eventPayload.Index),
 		)
 		return err
 	})
@@ -134,6 +136,7 @@ func (pg *Pg) InsertTokenBurn(ctx context.Context, eventPayload event.Event) err
 			eventPayload.Payload["tokenBurner"].(string),
 			eventPayload.Payload["value"].(string),
 			eventPayload.ContractAddress,
+			int64(eventPayload.Index),
 		)
 		return err
 	})
@@ -154,6 +157,7 @@ func (pg *Pg) InsertFaucetGive(ctx context.Context, eventPayload event.Event) er
 			eventPayload.Payload["recipient"].(string),
 			eventPayload.Payload["amount"].(string),
 			eventPayload.ContractAddress,
+			int64(eventPayload.Index),
 		)
 		return err
 	})
@@ -177,6 +181,7 @@ func (pg *Pg) InsertPoolSwap(ctx context.Context, eventPayload event.Event) erro
 			eventPayload.Payload["amountOut"].(string),
 			eventPayload.Payload["fee"].(string),
 			eventPayload.ContractAddress,
+			int64(eventPayload.Index),
 		)
 		return err
 	})
@@ -197,6 +202,7 @@ func (pg *Pg) InsertPoolDeposit(ctx context.Context, eventPayload event.Event) e
 			eventPayload.Payload["tokenIn"].(string),
 			eventPayload.Payload["amountIn"].(string),
 			eventPayload.ContractAddress,
+			int64(eventPayload.Index),
 		)
 		return err
 	})
@@ -216,6 +222,7 @@ func (pg *Pg) InsertOwnershipChange(ctx context.Context, eventPayload event.Even
 			eventPayload.Payload["previousOwner"].(string),
 			eventPayload.Payload["newOwner"].(string),
 			eventPayload.ContractAddress,
+			int64(eventPayload.Index),
 		)
 		return err
 	})
@@ -296,8 +303,6 @@ func (pg *Pg) executeTransaction(ctx context.Context, fn func(tx pgx.Tx) error) 
 	defer func() {
 		if err != nil {
 			tx.Rollback(ctx)
-		} else {
-			tx.Commit(ctx)
 		}
 	}()
 
@@ -305,7 +310,8 @@ func (pg *Pg) executeTransaction(ctx context.Context, fn func(tx pgx.Tx) error) 
 		return err
 	}
 
-	return nil
+	err = tx.Commit(ctx)
+	return err
 }
 
 func loadQueries(queriesPath string) (*queries, error) {

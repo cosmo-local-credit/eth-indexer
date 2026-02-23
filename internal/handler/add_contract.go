@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/grassrootseconomics/eth-tracker/pkg/event"
+	"github.com/cosmo-local-credit/eth-tracker/pkg/event"
 	"github.com/grassrootseconomics/ethutils"
 	"github.com/lmittmann/w3"
 	"github.com/lmittmann/w3/module/eth"

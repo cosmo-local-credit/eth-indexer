@@ -12,12 +12,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/api"
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/cache"
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/handler"
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/store"
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/sub"
-	"github.com/grassrootseconomics/eth-indexer/v2/internal/util"
+	"github.com/cosmo-local-credit/eth-indexer/internal/api"
+	"github.com/cosmo-local-credit/eth-indexer/internal/cache"
+	"github.com/cosmo-local-credit/eth-indexer/internal/handler"
+	"github.com/cosmo-local-credit/eth-indexer/internal/store"
+	"github.com/cosmo-local-credit/eth-indexer/internal/sub"
+	"github.com/cosmo-local-credit/eth-indexer/internal/util"
 	"github.com/grassrootseconomics/ethutils"
 	"github.com/knadh/koanf/v2"
 )
@@ -44,7 +44,7 @@ func init() {
 	lo = util.InitLogger()
 	ko = util.InitConfig(lo, confFlag)
 
-	lo.Info("starting eth indexer", "build", build)
+	lo.Info("starting somo-local-credit indexer", "build", build)
 }
 
 func main() {
@@ -81,7 +81,7 @@ func main() {
 	jetStreamSub, err := sub.NewJetStreamSub(sub.JetStreamOpts{
 		Logg:        lo,
 		Router:      router,
-		Endpoint:    ko.MustString("jetstream.endpoint"),
+		Endpoints:   ko.Strings("jetstream.endpoints"),
 		JetStreamID: ko.MustString("jetstream.id"),
 	})
 	if err != nil {
