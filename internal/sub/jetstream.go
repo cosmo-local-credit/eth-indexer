@@ -43,6 +43,7 @@ func NewJetStreamSub(o JetStreamOpts) (*JetStreamSub, error) {
 	if err != nil {
 		return nil, err
 	}
+	o.Logg.Info("successfully connected to NATS server", "status", natsConn.Status().String(), "servers", natsConn.Servers())
 
 	js, err := jetstream.New(natsConn)
 	if err != nil {

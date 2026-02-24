@@ -81,7 +81,7 @@ func main() {
 	jetStreamSub, err := sub.NewJetStreamSub(sub.JetStreamOpts{
 		Logg:        lo,
 		Router:      router,
-		Endpoints:   ko.Strings("jetstream.endpoints"),
+		Endpoints:   ko.Strings("jetstream.endpoint"),
 		JetStreamID: ko.MustString("jetstream.id"),
 	})
 	if err != nil {

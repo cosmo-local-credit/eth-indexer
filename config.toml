@@ -8,9 +8,9 @@ address = ":5002"
 dsn = "postgres://postgres:postgres@127.0.0.1:5433/chain_data"
 
 [jetstream]
-# Single node: endpoints = ["nats://127.0.0.1:4222"]
-# Cluster: endpoints = ["nats://node1:4222", "nats://node2:4222", "nats://node3:4222"]
-endpoints = ["nats://127.0.0.1:4222"]
+# Single node: endpoint = ["nats://127.0.0.1:4222"]
+# Cluster: endpoint = ["nats://node1:4222", "nats://node2:4222", "nats://node3:4222"]
+endpoint = ["nats://127.0.0.1:4222"]
 id = "eth-indexer-1"
 
 [chain]
