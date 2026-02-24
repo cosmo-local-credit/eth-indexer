@@ -39,8 +39,8 @@ func InitConfig(lo *slog.Logger, confFilePath string) *koanf.Koanf {
 		os.Exit(1)
 	}
 
-	err := ko.Load(env.ProviderWithValue("INDEXER__", ".", func(s string, v string) (string, interface{}) {
-		key := strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "INDEXER__")), "__", ".")
+	err := ko.Load(env.ProviderWithValue("INDEXER_", ".", func(s string, v string) (string, interface{}) {
+		key := strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "INDEXER_")), "__", ".")
 		if strings.Contains(v, " ") {
 			return key, strings.Split(v, " ")
 		}
