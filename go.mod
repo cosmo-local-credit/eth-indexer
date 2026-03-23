@@ -8,7 +8,7 @@ require (
 	github.com/ethereum/go-ethereum v1.17.0
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/grassrootseconomics/ethutils v1.7.0
-	github.com/jackc/pgx/v5 v5.8.0
+	github.com/jackc/pgx/v5 v5.9.1
 	github.com/jackc/tern/v2 v2.3.5
 	github.com/kamikazechaser/util v0.1.0
 	github.com/knadh/goyesql/v2 v2.2.0
