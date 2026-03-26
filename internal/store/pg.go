@@ -258,6 +258,14 @@ func (pg *Pg) InsertPool(ctx context.Context, contractAddress string, name strin
 	})
 }
 
+func (pg *Pg) RestoreTokensByAddress(ctx context.Context, contractAddresses []string) (int64, error) {
+	return pg.restoreContractAddresses(ctx, pg.queries.RestoreToken, contractAddresses)
+}
+
+func (pg *Pg) RestorePoolsByAddress(ctx context.Context, contractAddresses []string) (int64, error) {
+	return pg.restoreContractAddresses(ctx, pg.queries.RestorePool, contractAddresses)
+}
+
 func (pg *Pg) RestoreContractAddress(ctx context.Context, eventPayload event.Event) error {
 	return pg.setContractAddressRemovedState(ctx, eventPayload.Payload["address"].(string), false)
 }
@@ -295,6 +303,51 @@ func (pg *Pg) setContractAddressRemovedState(ctx context.Context, contractAddres
 
 		return nil
 	})
+}
+
+func (pg *Pg) restoreContractAddresses(ctx context.Context, query string, contractAddresses []string) (int64, error) {
+	uniqueAddresses := uniqueContractAddresses(contractAddresses)
+	if len(uniqueAddresses) == 0 {
+		return 0, nil
+	}
+
+	batch := &pgx.Batch{}
+	for _, contractAddress := range uniqueAddresses {
+		batch.Queue(query, contractAddress)
+	}
+
+	results := pg.db.SendBatch(ctx, batch)
+	defer results.Close()
+
+	var affected int64
+	for range uniqueAddresses {
+		result, err := results.Exec()
+		if err != nil {
+			return 0, err
+		}
+		affected += result.RowsAffected()
+	}
+
+	return affected, nil
+}
+
+func uniqueContractAddresses(contractAddresses []string) []string {
+	if len(contractAddresses) == 0 {
+		return nil
+	}
+
+	unique := make([]string, 0, len(contractAddresses))
+	seen := make(map[string]struct{}, len(contractAddresses))
+	for _, contractAddress := range contractAddresses {
+		if _, ok := seen[contractAddress]; ok {
+			continue
+		}
+
+		seen[contractAddress] = struct{}{}
+		unique = append(unique, contractAddress)
+	}
+
+	return unique
 }
 
 func (pg *Pg) insertTx(ctx context.Context, tx pgx.Tx, eventPayload event.Event) (int, error) {

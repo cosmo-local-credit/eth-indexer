@@ -18,6 +18,8 @@ type (
 		InsertOwnershipChange(context.Context, event.Event) error
 		InsertToken(context.Context, string, string, string, uint8, string) error
 		InsertPool(context.Context, string, string, string) error
+		RestoreTokensByAddress(context.Context, []string) (int64, error)
+		RestorePoolsByAddress(context.Context, []string) (int64, error)
 		RestoreContractAddress(context.Context, event.Event) error
 		RemoveContractAddress(context.Context, event.Event) error
 		Pool() *pgxpool.Pool
