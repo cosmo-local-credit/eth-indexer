@@ -39,6 +39,8 @@ type (
 		InsertOwnershipChange string `query:"insert-ownership-change"`
 		InsertToken           string `query:"insert-token"`
 		InsertPool            string `query:"insert-pool"`
+		RestorePool           string `query:"restore-pool"`
+		RestoreToken          string `query:"restore-token"`
 		RemovePool            string `query:"remove-pool"`
 		RemoveToken           string `query:"remove-token"`
 	}
@@ -256,12 +258,27 @@ func (pg *Pg) InsertPool(ctx context.Context, contractAddress string, name strin
 	})
 }
 
+func (pg *Pg) RestoreContractAddress(ctx context.Context, eventPayload event.Event) error {
+	return pg.setContractAddressRemovedState(ctx, eventPayload.Payload["address"].(string), false)
+}
+
 func (pg *Pg) RemoveContractAddress(ctx context.Context, eventPayload event.Event) error {
+	return pg.setContractAddressRemovedState(ctx, eventPayload.Payload["address"].(string), true)
+}
+
+func (pg *Pg) setContractAddressRemovedState(ctx context.Context, contractAddress string, removed bool) error {
+	poolQuery := pg.queries.RemovePool
+	tokenQuery := pg.queries.RemoveToken
+	if !removed {
+		poolQuery = pg.queries.RestorePool
+		tokenQuery = pg.queries.RestoreToken
+	}
+
 	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
 		_, err := tx.Exec(
 			ctx,
-			pg.queries.RemovePool,
-			eventPayload.Payload["address"].(string),
+			poolQuery,
+			contractAddress,
 		)
 		if err != nil {
 			return err
@@ -269,8 +286,8 @@ func (pg *Pg) RemoveContractAddress(ctx context.Context, eventPayload event.Even
 
 		_, err = tx.Exec(
 			ctx,
-			pg.queries.RemoveToken,
-			eventPayload.Payload["address"].(string),
+			tokenQuery,
+			contractAddress,
 		)
 		if err != nil {
 			return err

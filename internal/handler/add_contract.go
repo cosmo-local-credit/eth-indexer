@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/cosmo-local-credit/eth-tracker/pkg/event"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/grassrootseconomics/ethutils"
 	"github.com/lmittmann/w3"
 	"github.com/lmittmann/w3/module/eth"
@@ -93,7 +93,7 @@ func (h *Handler) AddPool(ctx context.Context, event event.Event) error {
 // This is a special method meant to improve the UX on https://sarafu.network/pools
 func (h *Handler) AddSarafuNetworkFeaturedPool(ctx context.Context, event event.Event) error {
 	// This is the only pool index
-	if event.ContractAddress != "0x01eD8Fe01a2Ca44Cb26D00b1309d7D777471D00C" {
+	if !isFeaturedPoolIndexContractAddress(event.ContractAddress) {
 		return nil
 	}
 

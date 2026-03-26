@@ -154,6 +154,14 @@ INSERT INTO pools(
     pool_symbol
 ) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING
 
+--name: restore-pool
+-- $1: contract_address
+UPDATE pools SET removed = false WHERE contract_address = $1
+
+--name: restore-token
+-- $1: contract_address
+UPDATE tokens SET removed = false WHERE contract_address = $1
+
 --name: remove-pool
 -- $1: contract_address
 UPDATE pools SET removed = true WHERE contract_address = $1

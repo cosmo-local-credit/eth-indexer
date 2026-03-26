@@ -6,9 +6,10 @@ import (
 	"github.com/cosmo-local-credit/eth-tracker/pkg/event"
 )
 
-func (h *Handler) IndexRemove(ctx context.Context, event event.Event) error {
+func (h *Handler) IndexAdd(ctx context.Context, event event.Event) error {
 	if isRemovableIndexContractAddress(event.ContractAddress) {
-		return h.store.RemoveContractAddress(ctx, event)
+		return h.store.RestoreContractAddress(ctx, event)
 	}
+
 	return nil
 }

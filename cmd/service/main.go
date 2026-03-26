@@ -44,7 +44,7 @@ func init() {
 	lo = util.InitLogger()
 	ko = util.InitConfig(lo, confFlag)
 
-	lo.Info("starting somo-local-credit indexer", "build", build)
+	lo.Info("starting cosmo-local-credit indexer", "build", build)
 }
 
 func main() {
