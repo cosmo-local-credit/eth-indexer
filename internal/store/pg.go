@@ -29,7 +29,6 @@ type (
 	}
 
 	queries struct {
-		InsertTx              string `query:"insert-tx"`
 		InsertTokenTransfer   string `query:"insert-token-transfer"`
 		InsertTokenMint       string `query:"insert-token-mint"`
 		InsertTokenBurn       string `query:"insert-token-burn"`
@@ -83,151 +82,123 @@ func (pg *Pg) Pool() *pgxpool.Pool {
 }
 
 func (pg *Pg) InsertTokenTransfer(ctx context.Context, eventPayload event.Event) error {
-	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
-		txID, err := pg.insertTx(ctx, tx, eventPayload)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(
-			ctx,
-			pg.queries.InsertTokenTransfer,
-			txID,
-			eventPayload.Payload["from"].(string),
-			eventPayload.Payload["to"].(string),
-			eventPayload.Payload["value"].(string),
-			eventPayload.ContractAddress,
-			int64(eventPayload.Index),
-		)
-		return err
-	})
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertTokenTransfer,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["from"].(string),
+		eventPayload.Payload["to"].(string),
+		eventPayload.Payload["value"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
 }
 
 func (pg *Pg) InsertTokenMint(ctx context.Context, eventPayload event.Event) error {
-	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
-		txID, err := pg.insertTx(ctx, tx, eventPayload)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(
-			ctx,
-			pg.queries.InsertTokenMint,
-			txID,
-			eventPayload.Payload["tokenMinter"].(string),
-			eventPayload.Payload["to"].(string),
-			eventPayload.Payload["value"].(string),
-			eventPayload.ContractAddress,
-			int64(eventPayload.Index),
-		)
-		return err
-	})
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertTokenMint,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["tokenMinter"].(string),
+		eventPayload.Payload["to"].(string),
+		eventPayload.Payload["value"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
 }
 
 func (pg *Pg) InsertTokenBurn(ctx context.Context, eventPayload event.Event) error {
-	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
-		txID, err := pg.insertTx(ctx, tx, eventPayload)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(
-			ctx,
-			pg.queries.InsertTokenBurn,
-			txID,
-			eventPayload.Payload["tokenBurner"].(string),
-			eventPayload.Payload["value"].(string),
-			eventPayload.ContractAddress,
-			int64(eventPayload.Index),
-		)
-		return err
-	})
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertTokenBurn,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["tokenBurner"].(string),
+		eventPayload.Payload["value"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
 }
 
 func (pg *Pg) InsertFaucetGive(ctx context.Context, eventPayload event.Event) error {
-	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
-		txID, err := pg.insertTx(ctx, tx, eventPayload)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(
-			ctx,
-			pg.queries.InsertFaucetGive,
-			txID,
-			eventPayload.Payload["token"].(string),
-			eventPayload.Payload["recipient"].(string),
-			eventPayload.Payload["amount"].(string),
-			eventPayload.ContractAddress,
-			int64(eventPayload.Index),
-		)
-		return err
-	})
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertFaucetGive,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["token"].(string),
+		eventPayload.Payload["recipient"].(string),
+		eventPayload.Payload["amount"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
 }
 
 func (pg *Pg) InsertPoolSwap(ctx context.Context, eventPayload event.Event) error {
-	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
-		txID, err := pg.insertTx(ctx, tx, eventPayload)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(
-			ctx,
-			pg.queries.InsertPoolSwap,
-			txID,
-			eventPayload.Payload["initiator"].(string),
-			eventPayload.Payload["tokenIn"].(string),
-			eventPayload.Payload["tokenOut"].(string),
-			eventPayload.Payload["amountIn"].(string),
-			eventPayload.Payload["amountOut"].(string),
-			eventPayload.Payload["fee"].(string),
-			eventPayload.ContractAddress,
-			int64(eventPayload.Index),
-		)
-		return err
-	})
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertPoolSwap,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["initiator"].(string),
+		eventPayload.Payload["tokenIn"].(string),
+		eventPayload.Payload["tokenOut"].(string),
+		eventPayload.Payload["amountIn"].(string),
+		eventPayload.Payload["amountOut"].(string),
+		eventPayload.Payload["fee"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
 }
 
 func (pg *Pg) InsertPoolDeposit(ctx context.Context, eventPayload event.Event) error {
-	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
-		txID, err := pg.insertTx(ctx, tx, eventPayload)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(
-			ctx,
-			pg.queries.InsertPoolDeposit,
-			txID,
-			eventPayload.Payload["initiator"].(string),
-			eventPayload.Payload["tokenIn"].(string),
-			eventPayload.Payload["amountIn"].(string),
-			eventPayload.ContractAddress,
-			int64(eventPayload.Index),
-		)
-		return err
-	})
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertPoolDeposit,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["initiator"].(string),
+		eventPayload.Payload["tokenIn"].(string),
+		eventPayload.Payload["amountIn"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
 }
 
 func (pg *Pg) InsertOwnershipChange(ctx context.Context, eventPayload event.Event) error {
-	return pg.executeTransaction(ctx, func(tx pgx.Tx) error {
-		txID, err := pg.insertTx(ctx, tx, eventPayload)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.Exec(
-			ctx,
-			pg.queries.InsertOwnershipChange,
-			txID,
-			eventPayload.Payload["previousOwner"].(string),
-			eventPayload.Payload["newOwner"].(string),
-			eventPayload.ContractAddress,
-			int64(eventPayload.Index),
-		)
-		return err
-	})
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertOwnershipChange,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["previousOwner"].(string),
+		eventPayload.Payload["newOwner"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
 }
 
 func (pg *Pg) InsertToken(ctx context.Context, contractAddress string, name string, symbol string, decimals uint8, sinkAddress string) error {
@@ -348,21 +319,6 @@ func uniqueContractAddresses(contractAddresses []string) []string {
 	}
 
 	return unique
-}
-
-func (pg *Pg) insertTx(ctx context.Context, tx pgx.Tx, eventPayload event.Event) (int, error) {
-	var txID int
-	if err := tx.QueryRow(
-		ctx,
-		pg.queries.InsertTx,
-		eventPayload.TxHash,
-		eventPayload.Block,
-		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
-		eventPayload.Success,
-	).Scan(&txID); err != nil {
-		return 0, err
-	}
-	return txID, nil
 }
 
 func (pg *Pg) executeTransaction(ctx context.Context, fn func(tx pgx.Tx) error) error {

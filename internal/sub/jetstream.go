@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/cosmo-local-credit/eth-indexer/pkg/router"
@@ -67,6 +68,7 @@ func NewJetStreamSub(o JetStreamOpts) (*JetStreamSub, error) {
 	consumer, err := stream.CreateOrUpdateConsumer(ctx, jetstream.ConsumerConfig{
 		Durable:       o.JetStreamID,
 		AckPolicy:     jetstream.AckExplicitPolicy,
+		AckWait:       5 * time.Minute,
 		FilterSubject: pullSubject,
 	})
 	if err != nil {
@@ -76,7 +78,7 @@ func NewJetStreamSub(o JetStreamOpts) (*JetStreamSub, error) {
 
 	iter, err := consumer.Messages(
 		jetstream.WithMessagesErrOnMissingHeartbeat(false),
-		jetstream.PullMaxMessages(10),
+		jetstream.PullMaxMessages(500),
 	)
 	if err != nil {
 		return nil, err
@@ -96,21 +98,35 @@ func (s *JetStreamSub) Close() {
 }
 
 func (s *JetStreamSub) Process() {
+	const workerCount = 20
+	sem := make(chan struct{}, workerCount)
+	var wg sync.WaitGroup
+
 	for {
 		msg, err := s.jsIter.Next()
 		if err != nil {
 			if errors.Is(err, jetstream.ErrMsgIteratorClosed) {
 				s.logg.Debug("jetstream: iterator closed")
-				return
+				break
 			} else {
 				s.logg.Debug("jetstream: unknown iterator error", "error", err)
 				continue
 			}
 		}
 
-		s.logg.Debug("processing nats message", "subject", msg.Subject())
-		if err := s.router.Handle(context.Background(), msg); err != nil {
-			s.logg.Error("jetstream: router: error processing nats message", "error", err)
-		}
+		sem <- struct{}{}
+		wg.Add(1)
+		go func(msg jetstream.Msg) {
+			defer func() {
+				<-sem
+				wg.Done()
+			}()
+			s.logg.Debug("processing nats message", "subject", msg.Subject())
+			if err := s.router.Handle(context.Background(), msg); err != nil {
+				s.logg.Error("jetstream: router: error processing nats message", "error", err)
+			}
+		}(msg)
 	}
+
+	wg.Wait()
 }
