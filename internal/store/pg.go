@@ -36,6 +36,7 @@ type (
 		InsertPoolSwap        string `query:"insert-pool-swap"`
 		InsertPoolDeposit     string `query:"insert-pool-deposit"`
 		InsertOwnershipChange string `query:"insert-ownership-change"`
+		InsertIndexActive     string `query:"insert-index-active"`
 		InsertToken           string `query:"insert-token"`
 		InsertPool            string `query:"insert-pool"`
 		RestorePool           string `query:"restore-pool"`
@@ -198,6 +199,22 @@ func (pg *Pg) InsertOwnershipChange(ctx context.Context, eventPayload event.Even
 		eventPayload.Success,
 		eventPayload.Payload["previousOwner"].(string),
 		eventPayload.Payload["newOwner"].(string),
+		eventPayload.ContractAddress,
+		int64(eventPayload.Index),
+	)
+	return err
+}
+
+func (pg *Pg) InsertIndexActive(ctx context.Context, eventPayload event.Event) error {
+	_, err := pg.db.Exec(
+		ctx,
+		pg.queries.InsertIndexActive,
+		eventPayload.TxHash,
+		eventPayload.Block,
+		time.Unix(int64(eventPayload.Timestamp), 0).UTC(),
+		eventPayload.Success,
+		eventPayload.Payload["address"].(string),
+		eventPayload.Payload["active"].(bool),
 		eventPayload.ContractAddress,
 		int64(eventPayload.Index),
 	)

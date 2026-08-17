@@ -115,6 +115,21 @@ The last three columns are decoded from the pool's `SwapSettlement` event, which
 
 ---
 
+#### `index_active` — Registry activation state changes
+
+| Column | Type | Description |
+|---|---|---|
+| `id` | INT | Surrogate key. |
+| `tx_id` | INT | FK → `tx.id`. |
+| `account_address` | VARCHAR(42) | Address whose activation state changed. |
+| `active` | BOOLEAN | Whether the address is active as of this event. |
+| `contract_address` | VARCHAR(42) | Index contract that holds the entry. |
+| `log_index` | BIGINT | Log position within the transaction. |
+
+Deactivation revokes an address from the index's `have()` authorization check while retaining the entry for enumeration and later reactivation, so a deactivated address stays out of `index_remove` and keeps its original addition time. The current state of an address is the most recent row by `tx_id` and `log_index`; an address with no rows has never been deactivated.
+
+---
+
 #### `ownership_change` — Contract ownership transfer events
 
 | Column | Type | Description |

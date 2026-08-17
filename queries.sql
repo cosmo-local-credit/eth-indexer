@@ -142,6 +142,25 @@ INSERT INTO ownership_change(tx_id, previous_owner, new_owner, contract_address,
 SELECT id, $5, $6, $7, $8 FROM upsert_tx
 ON CONFLICT DO NOTHING
 
+--name: insert-index-active
+-- $1: tx_hash
+-- $2: block_number
+-- $3: date_block
+-- $4: success
+-- $5: account_address
+-- $6: active
+-- $7: contract_address
+-- $8: log_index
+WITH upsert_tx AS (
+    INSERT INTO tx(tx_hash, block_number, date_block, success)
+    VALUES($1, $2, $3, $4)
+    ON CONFLICT (tx_hash) DO UPDATE SET tx_hash = EXCLUDED.tx_hash
+    RETURNING id
+)
+INSERT INTO index_active(tx_id, account_address, active, contract_address, log_index)
+SELECT id, $5, $6, $7, $8 FROM upsert_tx
+ON CONFLICT DO NOTHING
+
 --name: insert-token
 -- $1: contract_address
 -- $2: token_name
