@@ -88,9 +88,16 @@ Every event row links back to a `tx` row via `tx_id`. Contract addresses in even
 | `token_out_address` | VARCHAR(42) | Token being bought out of the pool. |
 | `in_value` | NUMERIC | Raw amount of `token_in` sold. |
 | `out_value` | NUMERIC | Raw amount of `token_out` received. |
-| `fee` | NUMERIC | Raw fee charged by the pool (same unit as `in_value`). |
+| `fee` | NUMERIC | Raw pool fee, excluding the protocol fee. |
 | `contract_address` | VARCHAR(42) | Pool contract. Join to `pools` for name/symbol. |
 | `log_index` | BIGINT | Log position within the transaction. |
+| `quoted_out_value` | NUMERIC | Raw quote before fees. NULL before the settlement cutover. |
+| `nominal_out_value` | NUMERIC | Raw amount the pool transferred out. NULL before the settlement cutover. |
+| `protocol_fee` | NUMERIC | Raw protocol fee. NULL before the settlement cutover. |
+
+Every value except `in_value` is denominated in `token_out`, so scale `fee`, `protocol_fee` and each out value by `token_out`'s decimals.
+
+The last three columns are decoded from the pool's `SwapSettlement` event, which older pool implementations did not emit. They are NULL for every row indexed below the tracker's `chain.pool_settlement_block`, so treat NULL as unknown rather than zero and exclude it from fee aggregates. `nominal_out_value` and `out_value` differ only for fee-on-transfer output tokens, where `out_value` is the increase actually observed at the recipient.
 
 ---
 

@@ -164,6 +164,9 @@ func (pg *Pg) InsertPoolSwap(ctx context.Context, eventPayload event.Event) erro
 		eventPayload.Payload["fee"].(string),
 		eventPayload.ContractAddress,
 		int64(eventPayload.Index),
+		optionalString(eventPayload.Payload, "quotedAmountOut"),
+		optionalString(eventPayload.Payload, "nominalAmountOut"),
+		optionalString(eventPayload.Payload, "protocolFee"),
 	)
 	return err
 }
@@ -338,6 +341,16 @@ func (pg *Pg) executeTransaction(ctx context.Context, fn func(tx pgx.Tx) error) 
 
 	err = tx.Commit(ctx)
 	return err
+}
+
+// Events published before the pool settlement cutover omit the settlement keys
+// entirely, so they must reach postgres as NULL rather than an empty string.
+func optionalString(payload map[string]any, key string) *string {
+	value, ok := payload[key].(string)
+	if !ok {
+		return nil
+	}
+	return &value
 }
 
 func loadQueries(queriesPath string) (*queries, error) {

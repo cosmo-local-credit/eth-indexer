@@ -90,14 +90,17 @@ ON CONFLICT DO NOTHING
 -- $10: fee
 -- $11: contract_address
 -- $12: log_index
+-- $13: quoted_out_value
+-- $14: nominal_out_value
+-- $15: protocol_fee
 WITH upsert_tx AS (
     INSERT INTO tx(tx_hash, block_number, date_block, success)
     VALUES($1, $2, $3, $4)
     ON CONFLICT (tx_hash) DO UPDATE SET tx_hash = EXCLUDED.tx_hash
     RETURNING id
 )
-INSERT INTO pool_swap(tx_id, initiator_address, token_in_address, token_out_address, in_value, out_value, fee, contract_address, log_index)
-SELECT id, $5, $6, $7, $8, $9, $10, $11, $12 FROM upsert_tx
+INSERT INTO pool_swap(tx_id, initiator_address, token_in_address, token_out_address, in_value, out_value, fee, contract_address, log_index, quoted_out_value, nominal_out_value, protocol_fee)
+SELECT id, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15 FROM upsert_tx
 ON CONFLICT DO NOTHING
 
 --name: insert-pool-deposit
