@@ -79,22 +79,22 @@ WHERE id IN (
 
 
 CREATE UNIQUE INDEX idx_token_transfer_unique
-ON public.token_transfer(tx_id, sender_address, recipient_address, transfer_value, contract_address);
+ON token_transfer(tx_id, sender_address, recipient_address, transfer_value, contract_address);
 
 CREATE UNIQUE INDEX idx_token_mint_unique
-ON public.token_mint(tx_id, minter_address, recipient_address, mint_value, contract_address);
+ON token_mint(tx_id, minter_address, recipient_address, mint_value, contract_address);
 
 CREATE UNIQUE INDEX idx_token_burn_unique
-ON public.token_burn(tx_id, burner_address, burn_value, contract_address);
+ON token_burn(tx_id, burner_address, burn_value, contract_address);
 
 CREATE UNIQUE INDEX idx_faucet_give_unique
-ON public.faucet_give(tx_id, token_address, recipient_address, give_value, contract_address);
+ON faucet_give(tx_id, token_address, recipient_address, give_value, contract_address);
 
 CREATE UNIQUE INDEX idx_pool_swap_unique
-ON public.pool_swap(tx_id, initiator_address, token_in_address, token_out_address, in_value, out_value, fee, contract_address);
+ON pool_swap(tx_id, initiator_address, token_in_address, token_out_address, in_value, out_value, fee, contract_address);
 
 CREATE UNIQUE INDEX idx_pool_deposit_unique
-ON public.pool_deposit(tx_id, initiator_address, token_in_address, in_value, contract_address);
+ON pool_deposit(tx_id, initiator_address, token_in_address, in_value, contract_address);
 
 CREATE UNIQUE INDEX idx_ownership_change_unique
-ON public.ownership_change(tx_id, previous_owner, new_owner, contract_address);
+ON ownership_change(tx_id, previous_owner, new_owner, contract_address);
